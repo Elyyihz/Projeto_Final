@@ -15,60 +15,50 @@ app.use(session({
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 
+// Rota para a página de cadastro
 app.get('/register', (req, res) => {
   res.render('register');
 });
 
+// Rota para processar o cadastro
 app.post('/register', async (req, res) => {
-  try {
-    const username = req.body.username;
-    const password = await bcrypt.hash(req.body.password, 10);
+  const username = req.body.username;
+  const password = await bcrypt.hash(req.body.password, 10);
 
-    db.run("INSERT INTO users (username, password) VALUES (?, ?)", [username, password], (err) => {
-      if (err) {
-        console.error('Erro ao criar usuário:', err);
-        return res.status(500).send('Erro ao criar usuário');
-      }
-      res.redirect('/login');
-    });
-  } catch (error) {
-    console.error('Erro ao processar cadastro:', error);
-    res.status(500).send('Erro ao processar cadastro');
-  }
+  db.run("INSERT INTO users (username, password) VALUES (?, ?)", [username, password], (err) => {
+    if (err) {
+      return res.send('Erro ao criar usuário');
+    }
+    res.redirect('/login');
+  });
 });
 
+// Rota para a página de login
 app.get('/login', (req, res) => {
   res.render('login');
 });
 
+// Rota para processar o login
 app.post('/login', (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
 
   db.get('SELECT * FROM users WHERE username = ?', [username], async (err, row) => {
-    try {
-      if (err) {
-        console.error('Erro ao buscar usuário:', err);
-        return res.status(500).send('Erro ao buscar usuário');
-      }
-      if (!row) {
-        return res.status(401).send('Usuário ou senha incorretos');
-      }
-      const match = await bcrypt.compare(password, row.password);
-      if (match) {
-        req.session.loggedin = true;
-        req.session.username = username;
-        res.redirect('/dashboard');
-      } else {
-        res.status(401).send('Usuário ou senha incorretos');
-      }
-    } catch (error) {
-      console.error('Erro ao processar login:', error);
-      res.status(500).send('Erro ao processar login');
+    if (err || !row) {
+      return res.send('Usuário ou senha incorretos');
+    }
+    const match = await bcrypt.compare(password, row.password);
+    if (match) {
+      req.session.loggedin = true;
+      req.session.username = username;
+      res.redirect('/dashboard');
+    } else {
+      res.send('Usuário ou senha incorretos');
     }
   });
 });
 
+// Rota para a página de dashboard (após login)
 app.get('/dashboard', (req, res) => {
   if (req.session.loggedin) {
     res.send(`Bem-vindo, ${req.session.username}! <a href='/logout'>Logout</a>`);
@@ -77,14 +67,10 @@ app.get('/dashboard', (req, res) => {
   }
 });
 
+// Rota para logout
 app.get('/logout', (req, res) => {
   req.session.destroy();
   res.redirect('/login');
-});
-
-app.use((err, req, res, next) => {
-  console.error('Erro no middleware:', err.stack);
-  res.status(500).send('Algo deu errado!');
 });
 
 app.listen(3000, () => {
