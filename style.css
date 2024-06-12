@@ -402,3 +402,39 @@ Film grade
   ::-webkit-scrollbar-track {
     background-color: #291B25;
   }
+
+  .popup {
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	width: 300px;
+	background-color: white;
+	
+	padding: 20px;
+	border-radius: 8px;
+	display: none;
+}
+
+.popup h2 {
+	margin-top: 0;
+	color: #ffcc00;
+}
+
+.popup button {
+	margin: 10px 0;
+	padding: 10px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 16px;
+}
+
+.popup .no-btn {
+	background-color: #291B25;
+	color: #ffcc00;
+}
+
+.popup .yes-btn {
+	background-color: #ffcc00;
+	color: white;
+}
