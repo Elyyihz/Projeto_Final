@@ -12,9 +12,17 @@ body {
 }
 
 .container {
-	margin: 0 auto;
-	position: relative;
-	width: 960px;
+    margin: 0 auto;
+    position: relative;
+    width: 960px;
+    text-align: center;
+}
+
+.hero-imagem {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
 }
 
 
